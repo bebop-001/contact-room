@@ -1,21 +1,21 @@
 package com.example.gurleensethi.roomcontacts;
 
-import android.arch.persistence.room.Room;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.example.gurleensethi.roomcontacts.db.AppDatabase;
 import com.example.gurleensethi.roomcontacts.db.ContactDAO;
 import com.example.gurleensethi.roomcontacts.models.Contact;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -2,15 +2,17 @@ package com.example.gurleensethi.roomcontacts;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.gurleensethi.roomcontacts.models.Contact;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.gurleensethi.roomcontacts.models.*;
 
 import java.util.List;
+
 
 /**
  * Created by gurleensethi on 03/02/18.
@@ -24,9 +26,9 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
     }
 
     private Context context;
-    private List<Contact> contactList;
+    List<Contact> contactList;
     private int[] colors;
-    private ActionCallback mActionCallbacks;
+    ActionCallback mActionCallbacks;
 
     ContactRecyclerAdapter(Context context, List<Contact> contactList, int[] colors) {
         this.context = context;
