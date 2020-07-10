@@ -1,71 +1,43 @@
-package com.example.gurleensethi.roomcontacts;
+package com.example.gurleensethi.roomcontacts
 
-import android.database.sqlite.SQLiteConstraintException;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.app.Activity
+import android.database.sqlite.SQLiteConstraintException
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
+import com.example.gurleensethi.roomcontacts.db.AppDatabase
+import com.example.gurleensethi.roomcontacts.db.ContactDAO
+import com.example.gurleensethi.roomcontacts.models.Contact
+import kotlinx.android.synthetic.main.activity_create_contact.*
+import java.util.*
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-
-import com.example.gurleensethi.roomcontacts.db.AppDatabase;
-import com.example.gurleensethi.roomcontacts.db.ContactDAO;
-import com.example.gurleensethi.roomcontacts.models.Contact;
-
-import java.util.Date;
-
-public class CreateContactActivity extends AppCompatActivity {
-
-    private EditText mFirstNameEditText;
-    private EditText mLastNameEditText;
-    private EditText mPhoneNumberEditText;
-    private Button mSaveButton;
-    private ContactDAO mContactDAO;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_contact);
-
-        mContactDAO = Room.databaseBuilder(this, AppDatabase.class, "db-contacts")
-                .allowMainThreadQueries()   //Allows room to do operation on main thread
-                .build()
-                .getContactDAO();
-
-        mFirstNameEditText = findViewById(R.id.firstNameEditText);
-        mLastNameEditText = findViewById(R.id.lastNameEditText);
-        mPhoneNumberEditText = findViewById(R.id.phoneNumberEditText);
-        mSaveButton = findViewById(R.id.saveButton);
-
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String firstName = mFirstNameEditText.getText().toString();
-                String lastName = mLastNameEditText.getText().toString();
-                String phoneNumber = mPhoneNumberEditText.getText().toString();
-
-                if (firstName.length() == 0 || lastName.length() == 0 || phoneNumber.length() == 0) {
-                    Toast.makeText(CreateContactActivity.this, "Please make sure all details are correct", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Contact contact = new Contact();
-                contact.setFirstName(firstName);
-                contact.setLastName(lastName);
-                contact.setPhoneNumber(phoneNumber);
-                contact.setCreatedDate(new Date());
-
-                //Insert to database
-                try {
-                    mContactDAO.insert(contact);
-                    setResult(RESULT_OK);
-                    finish();
-                } catch (SQLiteConstraintException e) {
-                    Toast.makeText(CreateContactActivity.this, "A cotnact with same phone number already exists.", Toast.LENGTH_SHORT).show();
-                }
+class CreateContactActivity : AppCompatActivity() {
+    private lateinit var mContactDAO: ContactDAO
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_create_contact)
+        mContactDAO = Room.databaseBuilder(this, AppDatabase::class.java, "db-contacts")
+                .allowMainThreadQueries() //Allows room to do operation on main thread
+                .build().contactDAO
+        saveButton.setOnClickListener(View.OnClickListener {
+            val firstName = firstNameEditText.getText().toString()
+            val lastName = lastNameEditText.getText().toString()
+            val phoneNumber = phoneNumberEditText.getText().toString()
+            if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
+                Toast.makeText(this@CreateContactActivity, "Please make sure all details are correct", Toast.LENGTH_SHORT).show()
+                return@OnClickListener
             }
-        });
+            val contact = Contact(firstName, lastName, phoneNumber, Date())
+            //Insert to database
+            try {
+                mContactDAO.insert(contact)
+                setResult(Activity.RESULT_OK)
+                finish()
+            } catch (e: SQLiteConstraintException) {
+                Toast.makeText(this@CreateContactActivity, "A cotnact with same phone number already exists.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

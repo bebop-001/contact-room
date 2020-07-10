@@ -1,100 +1,80 @@
-package com.example.gurleensethi.roomcontacts;
+package com.example.gurleensethi.roomcontacts
 
-import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.gurleensethi.roomcontacts.models.*;
-
-import java.util.List;
-
+import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.OnLongClickListener
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.gurleensethi.roomcontacts.models.Contact
 
 /**
  * Created by gurleensethi on 03/02/18.
  */
-
-public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecyclerAdapter.ViewHolder> {
-
+class ContactRecyclerAdapter internal constructor (
+    private val context: Context,
+    var contactList: List<Contact>,
+    private val colors: IntArray
+) : RecyclerView.Adapter<ContactRecyclerAdapter.ViewHolder>() {
     //Interface for callbacks
     interface ActionCallback {
-        void onLongClickListener(Contact contact);
+        fun onLongClickListener(contact: Contact)
     }
 
-    private Context context;
-    List<Contact> contactList;
-    private int[] colors;
-    ActionCallback mActionCallbacks;
-
-    ContactRecyclerAdapter(Context context, List<Contact> contactList, int[] colors) {
-        this.context = context;
-        this.contactList = contactList;
-        this.colors = colors;
+    lateinit var mActionCallbacks: ActionCallback
+    override fun onCreateViewHolder(
+            parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(context)
+            .inflate(R.layout.item_recycler_contact, parent, false)
+        return ViewHolder(view)
     }
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_recycler_contact, parent, false);
-        return new ViewHolder(view);
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bindData(position)
     }
 
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bindData(position);
+    override fun getItemCount(): Int {
+        return contactList.size
     }
 
-    @Override
-    public int getItemCount() {
-        return contactList.size();
-    }
-
-    void updateData(List<Contact> contacts) {
-        this.contactList = contacts;
-        notifyDataSetChanged();
+    fun updateData(contacts: List<Contact>) {
+        contactList = contacts
+        notifyDataSetChanged()
     }
 
     //View Holder
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
-        private TextView mNameTextView;
-        private TextView mInitialsTextView;
-        private GradientDrawable mInitialsBackground;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-
-            itemView.setOnLongClickListener(this);
-
-            mInitialsTextView = itemView.findViewById(R.id.initialsTextView);
-            mNameTextView = itemView.findViewById(R.id.nameTextView);
-            mInitialsBackground = (GradientDrawable) mInitialsTextView.getBackground();
+    inner class ViewHolder(itemView: View) :
+            RecyclerView.ViewHolder(itemView), OnLongClickListener {
+        private val mNameTextView: TextView
+        private val mInitialsTextView: TextView
+        private val mInitialsBackground: GradientDrawable
+        fun bindData(position: Int) {
+            val (firstName, lastName) = contactList[position]
+            val fullName = "$firstName $lastName"
+            mNameTextView.text = fullName
+            val initial = firstName.toUpperCase().substring(0, 1)
+            mInitialsTextView.text = initial
+            mInitialsBackground.setColor(colors[position % colors.size])
         }
 
-        void bindData(int position) {
-            Contact contact = contactList.get(position);
-
-            String fullName = contact.getFirstName() + " " + contact.getLastName();
-            mNameTextView.setText(fullName);
-
-            String initial = contact.getFirstName().toUpperCase().substring(0, 1);
-            mInitialsTextView.setText(initial);
-
-            mInitialsBackground.setColor(colors[position % colors.length]);
+        override fun onLongClick(v: View): Boolean {
+            mActionCallbacks
+                .onLongClickListener(contactList[adapterPosition])
+            return true
         }
 
-        @Override
-        public boolean onLongClick(View v) {
-            if (mActionCallbacks != null) {
-                mActionCallbacks.onLongClickListener(contactList.get(getAdapterPosition()));
-            }
-            return true;
+        init {
+            itemView.setOnLongClickListener(this)
+            mInitialsTextView = itemView.findViewById(R.id.initialsTextView)
+            mNameTextView = itemView.findViewById(R.id.nameTextView)
+            mInitialsBackground =
+                mInitialsTextView.background as GradientDrawable
         }
     }
 
-    void addActionCallback(ActionCallback actionCallbacks) {
-        mActionCallbacks = actionCallbacks;
+    fun addActionCallback(actionCallbacks: ActionCallback) {
+        mActionCallbacks = actionCallbacks
     }
 }

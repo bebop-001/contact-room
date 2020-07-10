@@ -1,85 +1,67 @@
-package com.example.gurleensethi.roomcontacts;
+package com.example.gurleensethi.roomcontacts
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import com.example.gurleensethi.roomcontacts.db.AppDatabase
+import com.example.gurleensethi.roomcontacts.db.ContactDAO
+import com.example.gurleensethi.roomcontacts.models.Contact
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-
-import com.example.gurleensethi.roomcontacts.db.AppDatabase;
-import com.example.gurleensethi.roomcontacts.db.ContactDAO;
-import com.example.gurleensethi.roomcontacts.models.Contact;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity {
-
-    private static final int RC_CREATE_CONTACT = 1;
-    private static final int RC_UPDATE_CONTACT = 2;
-    private RecyclerView mContactsRecyclerView;
-    private ContactRecyclerAdapter mContactRecyclerAdapter;
-    private FloatingActionButton mAddContactFloatingActionButton;
-    private ContactDAO mContactDAO;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mContactDAO = Room.databaseBuilder(this, AppDatabase.class, "db-contacts")
-                .allowMainThreadQueries()   //Allows room to do operation on main thread
-                .build()
-                .getContactDAO();
-
-        mContactsRecyclerView = findViewById(R.id.contactsRecyclerView);
-        mContactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAddContactFloatingActionButton = findViewById(R.id.addContactFloatingActionButton);
-
-        int colors[] = {ContextCompat.getColor(this, R.color.colorAccent),
+class MainActivity : AppCompatActivity() {
+    private lateinit var mContactRecyclerAdapter: ContactRecyclerAdapter
+    private lateinit var mContactDAO: ContactDAO
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        mContactDAO = Room.databaseBuilder(this, AppDatabase::class.java, "db-contacts")
+                .allowMainThreadQueries() //Allows room to do operation on main thread
+                .build().contactDAO
+        contactsRecyclerView.setLayoutManager(LinearLayoutManager(this))
+        val colors = intArrayOf(ContextCompat.getColor(this, R.color.colorAccent),
                 ContextCompat.getColor(this, android.R.color.holo_red_light),
                 ContextCompat.getColor(this, android.R.color.holo_orange_light),
                 ContextCompat.getColor(this, android.R.color.holo_green_light),
                 ContextCompat.getColor(this, android.R.color.holo_blue_dark),
-                ContextCompat.getColor(this, android.R.color.holo_purple)};
-
-        mContactRecyclerAdapter = new ContactRecyclerAdapter(this, new ArrayList<Contact>(), colors);
-        mContactRecyclerAdapter.addActionCallback(new ContactRecyclerAdapter.ActionCallback() {
-            @Override
-            public void onLongClickListener(Contact contact) {
-                Intent intent = new Intent(MainActivity.this, UpdateContactActivity.class);
-                intent.putExtra(UpdateContactActivity.EXTRA_CONTACT_ID, contact.getPhoneNumber());
-                startActivityForResult(intent, RC_UPDATE_CONTACT);
+                ContextCompat.getColor(this, android.R.color.holo_purple))
+        mContactRecyclerAdapter = ContactRecyclerAdapter(this, ArrayList(), colors)
+        mContactRecyclerAdapter.addActionCallback(object : ContactRecyclerAdapter.ActionCallback {
+            override fun onLongClickListener(contact: Contact) {
+                val intent = Intent(this@MainActivity, UpdateContactActivity::class.java)
+                intent.putExtra(UpdateContactActivity.EXTRA_CONTACT_ID, contact.phoneNumber)
+                startActivityForResult(intent, RC_UPDATE_CONTACT)
             }
-        });
-        mContactsRecyclerView.setAdapter(mContactRecyclerAdapter);
-
-        mAddContactFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CreateContactActivity.class);
-                startActivityForResult(intent, RC_CREATE_CONTACT);
-            }
-        });
-
-        loadContacts();
+        })
+        contactsRecyclerView.setAdapter(mContactRecyclerAdapter)
+        addContactFloatingActionButton.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this@MainActivity, CreateContactActivity::class.java)
+            startActivityForResult(intent, RC_CREATE_CONTACT)
+        })
+        loadContacts()
     }
 
-    private void loadContacts() {
-        mContactRecyclerAdapter.updateData(mContactDAO.getContacts());
+    private fun loadContacts() {
+        mContactRecyclerAdapter.updateData(mContactDAO.contacts)
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_CREATE_CONTACT && resultCode == RESULT_OK) {
-            loadContacts();
-        } else if (requestCode == RC_UPDATE_CONTACT && resultCode == RESULT_OK) {
-            loadContacts();
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_CREATE_CONTACT && resultCode == Activity.RESULT_OK) {
+            loadContacts()
+        } else if (requestCode == RC_UPDATE_CONTACT && resultCode == Activity.RESULT_OK) {
+            loadContacts()
         }
+    }
+
+    companion object {
+        private const val RC_CREATE_CONTACT = 1
+        private const val RC_UPDATE_CONTACT = 2
     }
 }

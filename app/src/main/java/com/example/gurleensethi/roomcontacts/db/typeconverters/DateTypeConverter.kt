@@ -1,21 +1,19 @@
-package com.example.gurleensethi.roomcontacts.db.typeconverters;
+package com.example.gurleensethi.roomcontacts.db.typeconverters
 
-
-import androidx.room.TypeConverter;
-
-import java.util.Date;
+import androidx.room.TypeConverter
+import java.util.*
 
 /**
  * Created by gurleensethi on 05/02/18.
  */
-public class DateTypeConverter {
+class DateTypeConverter {
     @TypeConverter
-    public long convertDateToLong(Date date) {
-        return date.getTime();
+    fun convertDateToLong(date: Date): Long {
+        return date.time
     }
 
     @TypeConverter
-    public Date convertLongToDate(long time) {
-        return new Date(time);
+    fun convertLongToDate(time: Long): Date {
+        return Date(time)
     }
 }
