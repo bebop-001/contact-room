@@ -7,11 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import com.example.gurleensethi.roomcontacts.db.AppDatabase
-import com.example.gurleensethi.roomcontacts.db.ContactDAO
-import com.example.gurleensethi.roomcontacts.models.Contact
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 

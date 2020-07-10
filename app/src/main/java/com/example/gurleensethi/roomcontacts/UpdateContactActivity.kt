@@ -10,11 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
-import com.example.gurleensethi.roomcontacts.db.AppDatabase
-import com.example.gurleensethi.roomcontacts.db.ContactDAO
-import com.example.gurleensethi.roomcontacts.models.Contact
 import kotlinx.android.synthetic.main.activity_update_contact.*
-import java.lang.Exception
 
 class UpdateContactActivity : AppCompatActivity() {
     private lateinit var mContactDAO: ContactDAO
@@ -54,10 +50,10 @@ class UpdateContactActivity : AppCompatActivity() {
             catch (e : SQLiteConstraintException) {
                 Log.d("update", "exception : ${e.message}")
                 if ("constraint failed: Contact.phoneNumber".toRegex().find(e.message!!) != null) {
-                    Toast.makeText(UpdateContactActivity@this, "update failed.  Non unique phone number",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "update failed.  Non unique phone number",Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    Toast.makeText(UpdateContactActivity@this, "update failed for unknown reason.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "update failed for unknown reason.", Toast.LENGTH_SHORT).show()
                 }
             }
             setResult(Activity.RESULT_OK)

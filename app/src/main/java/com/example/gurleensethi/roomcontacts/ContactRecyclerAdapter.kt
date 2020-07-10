@@ -8,15 +8,14 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gurleensethi.roomcontacts.models.Contact
 
 /**
  * Created by gurleensethi on 03/02/18.
  */
 class ContactRecyclerAdapter internal constructor (
-    private val context: Context,
-    var contactList: List<Contact>,
-    private val colors: IntArray
+        private val context: Context,
+        var contactList: List<Contact>,
+        private val colors: IntArray
 ) : RecyclerView.Adapter<ContactRecyclerAdapter.ViewHolder>() {
     //Interface for callbacks
     interface ActionCallback {

@@ -7,9 +7,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
-import com.example.gurleensethi.roomcontacts.db.AppDatabase
-import com.example.gurleensethi.roomcontacts.db.ContactDAO
-import com.example.gurleensethi.roomcontacts.models.Contact
 import kotlinx.android.synthetic.main.activity_create_contact.*
 import java.util.*
 
